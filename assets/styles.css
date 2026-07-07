@@ -14,7 +14,7 @@
   --success: #9ef7bd;
   --warning: #ffd88a;
   --container: min(1190px, calc(100% - 40px));
-  --radius: 6px;
+  --radius: 18px;
   --ease: cubic-bezier(.2, .8, .2, 1);
 }
 
@@ -164,6 +164,7 @@ section[id] {
   width: 42px;
   height: 42px;
   border: 1px solid var(--line-strong);
+  border-radius: 14px;
   color: var(--cyan);
 }
 
@@ -212,7 +213,7 @@ section[id] {
   min-height: 52px;
   padding: 0 28px;
   border: 1px solid transparent;
-  border-radius: 0;
+  border-radius: 999px;
   color: var(--text);
   font-size: .86rem;
   font-weight: 900;
@@ -251,7 +252,7 @@ section[id] {
   width: 52px;
   height: 52px;
   border: 1px solid var(--line);
-  border-radius: 0;
+  border-radius: 999px;
   background: rgba(255, 255, 255, 0.04);
   color: var(--text);
 }
@@ -388,8 +389,10 @@ body.menu-open .icon-btn::after {
   align-items: center;
   min-height: 92px;
   border: 1px solid var(--line);
+  border-radius: var(--radius);
   background: linear-gradient(135deg, rgba(37, 35, 34, .88), rgba(20, 19, 20, .74));
   backdrop-filter: blur(8px);
+  overflow: hidden;
 }
 
 .number-card strong {
@@ -537,7 +540,9 @@ body.menu-open .icon-btn::after {
 
 .hall-card {
   border: 1px solid var(--line);
+  border-radius: var(--radius);
   background: var(--panel);
+  overflow: hidden;
 }
 
 .hall-card-image {
@@ -565,6 +570,7 @@ body.menu-open .icon-btn::after {
   bottom: 16px;
   padding: 7px 10px;
   border: 1px solid var(--line-strong);
+  border-radius: 999px;
   color: var(--cyan);
   background: rgba(5, 5, 5, 0.68);
   font-size: .78rem;
@@ -647,6 +653,7 @@ body.menu-open .icon-btn::after {
   gap: 40px;
   align-items: end;
   border: 1px solid var(--line);
+  border-radius: var(--radius);
   padding: 40px;
   background: linear-gradient(135deg, rgba(143, 251, 242, 0.09), rgba(166, 102, 255, 0.08), rgba(20, 20, 20, .88));
 }
@@ -680,7 +687,7 @@ body.menu-open .icon-btn::after {
   min-height: 220px;
   padding: 0;
   border: 1px solid var(--line);
-  border-radius: 0;
+  border-radius: var(--radius);
   overflow: hidden;
   background: #111;
 }
@@ -741,6 +748,7 @@ body.menu-open .icon-btn::after {
 
 .form-panel {
   border: 1px solid var(--line);
+  border-radius: var(--radius);
   padding: 28px;
   background: var(--panel-strong);
 }
@@ -773,7 +781,7 @@ body.menu-open .icon-btn::after {
   width: 100%;
   min-height: 52px;
   border: 1px solid var(--line);
-  border-radius: 0;
+  border-radius: 14px;
   padding: 0 14px;
   color: var(--text);
   background: rgba(255, 255, 255, 0.045);
@@ -858,6 +866,7 @@ body.menu-open .icon-btn::after {
   position: relative;
   overflow: hidden;
   border: 1px solid var(--line);
+  border-radius: var(--radius);
   background:
     linear-gradient(135deg, rgba(143, 251, 242, .12), transparent 32%),
     linear-gradient(45deg, transparent 0 48%, rgba(255, 255, 255, .12) 49% 51%, transparent 52%),
@@ -878,6 +887,7 @@ body.menu-open .icon-btn::after {
   bottom: 26px;
   padding: 20px;
   border: 1px solid var(--line);
+  border-radius: 14px;
   background: rgba(5, 5, 5, .78);
 }
 
@@ -959,7 +969,7 @@ body.menu-open .icon-btn::after {
   width: 46px;
   height: 46px;
   border: 1px solid var(--line);
-  border-radius: 0;
+  border-radius: 999px;
   color: var(--text);
   background: rgba(255, 255, 255, .06);
   font-size: 1.4rem;
@@ -980,6 +990,7 @@ body.menu-open .icon-btn::after {
   margin: 0;
   padding: 28px;
   border: 1px solid var(--line);
+  border-radius: var(--radius);
   color: var(--muted);
   background: var(--panel);
 }
@@ -1049,6 +1060,7 @@ body.menu-open .icon-btn::after {
   flex: 0 0 auto;
   padding: 11px 14px;
   border: 1px solid var(--line);
+  border-radius: 999px;
   color: var(--muted);
   font-size: .82rem;
   font-weight: 900;
@@ -1069,7 +1081,9 @@ body.menu-open .icon-btn::after {
 
 .menu-category {
   border: 1px solid var(--line);
+  border-radius: var(--radius);
   background: var(--panel);
+  overflow: hidden;
 }
 
 .menu-category-head {
@@ -1139,6 +1153,7 @@ body.menu-open .icon-btn::after {
 .menu-item-meta {
   padding: 5px 8px;
   border: 1px solid var(--line);
+  border-radius: 999px;
   color: var(--soft);
   font-size: .78rem;
 }
