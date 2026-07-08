@@ -43,7 +43,7 @@
     if (!endpoint) {
       await new Promise((resolve) => window.setTimeout(resolve, 450));
       status.classList.add("is-warning");
-      status.textContent = "Заявка не ушла автоматически. Напишите нам в Инстаграм - ответим по свободным датам.";
+      status.textContent = "Заявка не ушла автоматически. Напишите нам в Instagram - ответим по свободным датам.";
       submitButton.disabled = false;
       return;
     }
@@ -63,7 +63,7 @@
     } catch (error) {
       console.error(error);
       status.classList.add("is-error");
-      status.textContent = "Не получилось отправить заявку. Напишите нам в Инстаграм - проверим дату вручную.";
+      status.textContent = "Не получилось отправить заявку. Напишите нам в Instagram - проверим дату вручную.";
     } finally {
       submitButton.disabled = false;
     }

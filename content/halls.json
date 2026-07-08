@@ -9,7 +9,7 @@
     },
     {
       "id": "zona-vstrechi",
-      "title": "Зона встречи",
+      "title": "Welcome зона",
       "description": "Место для встречи гостей, фуршета, первых тостов и спокойного старта вечера до основной программы.",
       "image": "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1100&q=82",
       "tagline": "старт события"
@@ -17,7 +17,7 @@
     {
       "id": "photo-stage",
       "title": "Фотозоны и сценарий",
-      "description": "Площадка легко адаптируется под фотозоны, ведущего, сцену, бар для встречи гостей и движение гостей.",
+      "description": "Площадка легко адаптируется под фотозоны, ведущего, сцену, welcome-бар и движение гостей.",
       "image": "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1100&q=82",
       "tagline": "гибкая посадка"
     }

@@ -109,7 +109,7 @@
       renderMenu(Array.isArray(content.categories) ? content.categories : []);
     } catch (error) {
       console.error(error);
-      grid.innerHTML = '<p class="empty-state">Не удалось загрузить меню. Напишите нам в Инстаграм - отправим актуальный вариант.</p>';
+      grid.innerHTML = '<p class="empty-state">Не удалось загрузить меню. Напишите нам в Instagram - отправим актуальный вариант.</p>';
     }
   }
 
