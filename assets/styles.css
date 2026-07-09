@@ -136,23 +136,13 @@ section[id] {
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
   min-width: max-content;
-  font-weight: 900;
-  text-transform: uppercase;
 }
 
-.brand strong {
-  line-height: 1;
-  letter-spacing: 0;
-}
-
-.brand strong span {
-  display: block;
-  margin-top: 5px;
-  color: var(--soft);
-  font-size: .68rem;
-  font-weight: 700;
+.brand-logo {
+  width: auto;
+  height: 68px;
+  object-fit: contain;
 }
 
 .nav {
@@ -1449,8 +1439,8 @@ body.menu-open .icon-btn::after {
     --radius: 18px;
   }
 
-  .brand strong {
-    font-size: .9rem;
+  .brand-logo {
+    height: 56px;
   }
 
   .hero {
