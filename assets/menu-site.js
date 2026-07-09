@@ -49,7 +49,7 @@
     if (item.amount) {
       const meta = document.createElement("div");
       meta.className = "menu-item-metas";
-      meta.append(createMeta("Формат", item.amount));
+      meta.append(createMeta("Выход", item.amount));
       content.append(meta);
     }
 

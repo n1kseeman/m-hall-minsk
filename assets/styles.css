@@ -883,14 +883,86 @@ body.menu-open .icon-btn::after {
   background: var(--surface-sage);
 }
 
+.reviews {
+  background: var(--surface-soft);
+}
+
+.reviews-rating {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.reviews-rating > strong {
+  color: var(--sage-dark);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 4rem;
+  font-weight: 400;
+  line-height: .9;
+}
+
+.reviews-rating span,
+.review-stars {
+  display: block;
+  color: var(--coral);
+  letter-spacing: 0;
+}
+
+.reviews-rating p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.review-card {
+  display: flex;
+  min-height: 310px;
+  flex-direction: column;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.review-card p {
+  flex: 1;
+  margin: 22px 0 28px;
+  color: var(--muted);
+}
+
+.review-card strong {
+  display: block;
+  font-size: 1rem;
+}
+
+.review-source {
+  margin-top: 8px;
+  color: var(--coral);
+  font-size: .8rem;
+  font-weight: 800;
+}
+
+.review-source:hover {
+  color: var(--sage-dark);
+}
+
 .contacts-layout {
   display: grid;
-  grid-template-columns: minmax(0, .65fr) minmax(360px, .5fr);
-  gap: 72px;
+  grid-template-columns: minmax(0, .7fr) minmax(420px, .72fr);
+  gap: 40px;
+  align-items: stretch;
 }
 
 .contact-list {
   display: grid;
+  margin-top: 32px;
   border-top: 1px solid rgba(52, 77, 64, 0.2);
 }
 
@@ -926,40 +998,47 @@ body.menu-open .icon-btn::after {
   margin-top: 30px;
 }
 
-.map-panel {
-  min-height: 390px;
+.map-wrap {
+  min-height: 540px;
   position: relative;
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius: calc(var(--radius) + 6px);
   background: var(--surface-soft);
+  box-shadow: var(--shadow);
 }
 
-.map-panel img {
+.map-wrap iframe {
+  width: 100%;
   height: 100%;
-  object-fit: cover;
-  opacity: .72;
-  filter: saturate(.5) brightness(1.08);
+  min-height: 540px;
+  border: 0;
+  filter: saturate(.65) contrast(.94) brightness(1.04);
 }
 
-.map-label {
+.map-card {
   position: absolute;
-  left: 26px;
-  right: 26px;
-  bottom: 26px;
+  right: 20px;
+  bottom: 20px;
+  left: 20px;
+  max-width: 380px;
   padding: 20px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, .9);
+  background: rgba(255, 255, 255, .94);
   box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(14px);
+  pointer-events: none;
 }
 
-.map-label strong {
+.map-card strong {
   display: block;
   color: var(--sage-dark);
+  font-family: Georgia, "Times New Roman", serif;
   font-size: 1.4rem;
+  font-weight: 400;
 }
 
-.map-label span {
+.map-card span {
   display: block;
   margin-top: 6px;
   color: var(--muted);
@@ -1142,17 +1221,20 @@ body.menu-open .icon-btn::after {
 }
 
 .menu-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
+  column-count: 2;
+  column-gap: 20px;
 }
 
 .menu-category {
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 20px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
   box-shadow: var(--shadow-soft);
   overflow: hidden;
+  break-inside: avoid;
 }
 
 .menu-category-head {
@@ -1254,6 +1336,10 @@ body.menu-open .icon-btn::after {
 
   .events-grid,
   .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .reviews-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
@@ -1369,8 +1455,12 @@ body.menu-open .icon-btn::after {
 
   .events-grid,
   .halls-grid,
-  .menu-grid {
+  .reviews-grid {
     grid-template-columns: 1fr;
+  }
+
+  .menu-grid {
+    column-count: 1;
   }
 
   .events-grid {
@@ -1403,6 +1493,11 @@ body.menu-open .icon-btn::after {
   .booking-layout,
   .contacts-layout {
     gap: 46px;
+  }
+
+  .map-wrap,
+  .map-wrap iframe {
+    min-height: 460px;
   }
 
   .menu-page-head h1 {
@@ -1552,6 +1647,25 @@ body.menu-open .icon-btn::after {
   .contact-row {
     grid-template-columns: 1fr;
     gap: 6px;
+  }
+
+  .reviews-rating {
+    align-items: flex-start;
+  }
+
+  .review-card {
+    min-height: 0;
+  }
+
+  .map-wrap,
+  .map-wrap iframe {
+    min-height: 400px;
+  }
+
+  .map-card {
+    right: 14px;
+    bottom: 14px;
+    left: 14px;
   }
 
   .contact-actions,
