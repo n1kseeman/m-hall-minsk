@@ -311,7 +311,7 @@ body.menu-open .icon-btn::after {
   position: absolute;
   z-index: -2;
   inset: 0;
-  background: var(--hero-image, url("https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=2200&q=88")) center / cover;
+  background: var(--hero-image, url("photos/mhall-01.webp")) center / cover;
   filter: saturate(.72) brightness(1.08);
   transform: scale(1.02);
 }
@@ -1142,7 +1142,7 @@ body.menu-open .icon-btn::after {
 }
 
 .menu-hero::before {
-  background: url("https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=2200&q=88") center / cover;
+  background: url("photos/mhall-02.webp") center / cover;
   filter: saturate(.66) brightness(1.12);
 }
 
