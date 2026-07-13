@@ -14,6 +14,22 @@ python3 -m http.server 4173
 
 Сайт публикуется через GitHub Pages из корня ветки `main`.
 
+## Telegram-заявки
+
+Форма на сайте отправляет заявку на backend endpoint из атрибута `data-form-endpoint` в `index.html`.
+Для Telegram используется Cloudflare Worker `worker/telegram-booking-worker.js`.
+
+Нужные секреты Worker:
+
+```bash
+npm install
+npm run worker:secret:token
+npm run worker:secret:chat
+npm run worker:deploy
+```
+
+После деплоя Worker нужно вставить его URL в `data-form-endpoint`.
+
 ## Структура
 
 - `index.html` - главная страница;
@@ -23,10 +39,11 @@ python3 -m http.server 4173
 - `assets/halls-site.js` - загрузка залов из `content/halls.json`;
 - `assets/menu-site.js` - загрузка меню из `content/menu.json`;
 - `content/halls.json` - контент залов и зон;
-- `content/menu.json` - контент меню.
+- `content/menu.json` - контент меню;
+- `worker/telegram-booking-worker.js` - endpoint для отправки заявок в Telegram.
 
 ## Что подключить перед боевым запуском
 
-- endpoint формы заявки, если будет подключаться Cloudflare Worker или другой backend;
+- URL задеплоенного Worker в `data-form-endpoint`;
 - телефон, если он нужен на сайте;
 - финальные юридические данные для футера или политики.

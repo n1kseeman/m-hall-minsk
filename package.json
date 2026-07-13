@@ -1,0 +1,14 @@
+{
+  "name": "m-hall-minsk",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "worker:deploy": "wrangler deploy",
+    "worker:secret:token": "wrangler secret put TELEGRAM_BOT_TOKEN",
+    "worker:secret:chat": "wrangler secret put TELEGRAM_CHAT_ID"
+  },
+  "devDependencies": {
+    "wrangler": "^4.24.3"
+  }
+}
