@@ -335,18 +335,6 @@ body.menu-open .icon-btn::after {
   max-width: 740px;
 }
 
-.vertical-label {
-  position: absolute;
-  left: -19px;
-  bottom: 146px;
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  color: var(--sage-dark);
-  font-size: .72rem;
-  font-weight: 900;
-  text-transform: uppercase;
-}
-
 .hero-kicker,
 .eyebrow {
   margin: 0 0 18px;
@@ -1427,10 +1415,6 @@ body.menu-open .icon-btn::after {
 
   .hero-title {
     font-size: 4.6rem;
-  }
-
-  .vertical-label {
-    display: none;
   }
 
   .section {
