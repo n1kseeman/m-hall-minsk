@@ -5,21 +5,30 @@
       "title": "Светлый зал",
       "description": "Основное пространство M HALL для свадеб, юбилеев, корпоративов и семейных банкетов до 120 гостей.",
       "image": "assets/photos/mhall-01.webp",
-      "tagline": "до 120 гостей"
+      "tagline": "до 120 гостей",
+      "images": [
+        "assets/photos/mhall-01.webp"
+      ]
     },
     {
       "id": "zona-vstrechi",
       "title": "Welcome зона",
       "description": "Локация для красивого начала вечера: приветственный фуршет, приятная музыка и непринужденное общение в ожидании главных событий.",
       "image": "assets/photos/mhall-02.webp",
-      "tagline": "старт события"
+      "tagline": "старт события",
+      "images": [
+        "assets/photos/mhall-02.webp"
+      ]
     },
     {
       "id": "photo-stage",
       "title": "Пространство для идей",
       "description": "Свободная планировка позволяет организовать банкетную рассадку, сцену, танцпол и отдельные зоны под формат вашего события.",
       "image": "assets/photos/mhall-10.jpg",
-      "tagline": "гибкая посадка"
+      "tagline": "гибкая посадка",
+      "images": [
+        "assets/photos/mhall-10.jpg"
+      ]
     }
   ]
 }
