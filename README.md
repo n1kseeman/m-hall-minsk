@@ -47,3 +47,21 @@ npm run worker:deploy
 - URL задеплоенного Worker в `data-form-endpoint`;
 - телефон, если он нужен на сайте;
 - финальные юридические данные для футера или политики.
+
+## Административная панель
+
+Админ-панель доступна на странице `admin.html`. Она позволяет менять порядок залов, редактировать названия, описания и метки, добавлять/удалять залы и управлять порядком фотографий.
+
+Панель работает через тот же Cloudflare Worker, но по маршрутам `/admin/login` и `/admin/halls`, поэтому существующая форма бронирования продолжает отправлять заявки обычным `POST` на корневой endpoint.
+
+Дополнительные секреты/переменные Worker для публикации в GitHub:
+
+```bash
+wrangler secret put ADMIN_PASSWORD
+wrangler secret put GITHUB_TOKEN
+wrangler secret put GITHUB_OWNER # опционально, по умолчанию n1kseeman
+wrangler secret put GITHUB_REPO  # опционально, по умолчанию m-hall-minsk
+wrangler secret put GITHUB_BRANCH # опционально, по умолчанию main
+```
+
+`GITHUB_TOKEN` должен иметь право обновлять содержимое репозитория. Загрузка новых фотографий сохраняет файлы в `assets/photos/`, а изменения залов — в `content/halls.json`.

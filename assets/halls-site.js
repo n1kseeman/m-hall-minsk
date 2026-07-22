@@ -18,7 +18,7 @@
     body.className = "hall-card-body";
     link.className = "btn btn-ghost";
 
-    image.src = hall.image;
+    image.src = Array.isArray(hall.images) && hall.images.length ? hall.images[0] : hall.image;
     image.alt = `${hall.title} M HALL`;
     image.width = 1100;
     image.height = 780;
