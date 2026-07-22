@@ -18,8 +18,6 @@ const FIELD_LABELS = {
 
 
 const ADMIN_TOKEN_TTL_SECONDS = 60 * 60 * 8;
-const DEFAULT_ADMIN_USERNAME = "admin";
-const DEFAULT_ADMIN_PASSWORD = "Mhall-7429";
 
 function base64Url(buffer) {
   const bytes = buffer instanceof ArrayBuffer ? new Uint8Array(buffer) : new TextEncoder().encode(String(buffer));
@@ -143,10 +141,8 @@ async function saveUploadedImages(env, halls) {
 async function handleAdmin(request, env, origin, url) {
   if (url.pathname === "/admin/login" && request.method === "POST") {
     const payload = await request.json().catch(() => ({}));
-    const adminUsername = env.ADMIN_USERNAME || DEFAULT_ADMIN_USERNAME;
-    const adminPassword = env.ADMIN_PASSWORD || DEFAULT_ADMIN_PASSWORD;
-    if (payload.username !== adminUsername || payload.password !== adminPassword) {
-      return jsonResponse({ ok: false, error: "Invalid credentials" }, 401, origin);
+    if (!env.ADMIN_PASSWORD || payload.password !== env.ADMIN_PASSWORD) {
+      return jsonResponse({ ok: false, error: "Invalid password" }, 401, origin);
     }
     return jsonResponse({ ok: true, token: await issueAdminToken(env) }, 200, origin);
   }

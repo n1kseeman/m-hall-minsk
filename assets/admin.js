@@ -107,7 +107,7 @@
     event.preventDefault();
     const form = new FormData(loginForm);
     session = { endpoint: form.get("endpoint") || defaultEndpoint, token: "" };
-    const response = await fetch(endpoint("/admin/login"), { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ username: form.get("username"), password: form.get("password") }) });
+    const response = await fetch(endpoint("/admin/login"), { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ password: form.get("password") }) });
     const data = await response.json();
     if (!response.ok || !data.token) { alert(data.error || "Не удалось войти"); return; }
     session.token = data.token;
