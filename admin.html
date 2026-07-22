@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Админ-панель M HALL</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#f5f7f3">
+  <link rel="icon" href="assets/m-hall-logo.png?v=20260722" type="image/png">
+  <link rel="stylesheet" href="assets/styles.css?v=20260722">
+</head>
+<body class="admin-page">
+  <main class="admin-shell">
+    <section class="admin-hero">
+      <a class="brand" href="index.html" aria-label="На сайт M HALL">
+        <img class="brand-logo" src="assets/m-hall-logo.png?v=20260722" alt="M HALL Минск" width="1331" height="786">
+      </a>
+      <div>
+        <p class="eyebrow">Администрирование</p>
+        <h1>Панель управления M HALL</h1>
+        <p>Редактируйте залы, описания, фотографии и порядок карточек. Публикация сохраняет изменения напрямую в GitHub через Cloudflare Worker.</p>
+      </div>
+    </section>
+
+    <section class="admin-card" data-login-panel>
+      <h2>Вход</h2>
+      <p>Введите пароль администратора. Токен хранится только в текущем браузере.</p>
+      <form class="admin-login" data-login-form>
+        <div class="field">
+          <label for="worker-endpoint">Worker endpoint</label>
+          <input id="worker-endpoint" name="endpoint" type="url" placeholder="https://m-hall-booking...workers.dev" required>
+        </div>
+        <div class="field">
+          <label for="admin-login">Логин</label>
+          <input id="admin-login" name="username" type="text" autocomplete="username" value="admin" required>
+        </div>
+        <div class="field">
+          <label for="admin-password">Пароль</label>
+          <input id="admin-password" name="password" type="password" autocomplete="current-password" placeholder="Mhall-7429" required>
+        </div>
+        <button class="btn btn-primary" type="submit">Войти</button>
+      </form>
+    </section>
+
+    <section class="admin-workspace" data-admin-app hidden>
+      <div class="admin-toolbar admin-card">
+        <div>
+          <p class="eyebrow">Контент</p>
+          <h2>Залы и фотографии</h2>
+          <p>Перетаскивайте порядок кнопками, добавляйте фото с компьютера или URL и сохраняйте одним коммитом.</p>
+        </div>
+        <div class="admin-actions">
+          <button class="btn btn-ghost" type="button" data-add-hall>Добавить зал</button>
+          <button class="btn btn-outline" type="button" data-reload>Обновить</button>
+          <button class="btn btn-primary" type="button" data-save>Сохранить в GitHub</button>
+          <button class="btn btn-ghost" type="button" data-logout>Выйти</button>
+        </div>
+      </div>
+
+      <div class="admin-status" role="status" aria-live="polite" data-admin-status></div>
+      <div class="admin-list" data-halls-editor></div>
+    </section>
+  </main>
+
+  <template id="hall-template">
+    <article class="admin-hall admin-card">
+      <div class="admin-hall-head">
+        <span class="admin-drag">↕</span>
+        <div class="field">
+          <label>Название</label>
+          <input data-field="title" type="text" required>
+        </div>
+        <div class="admin-row-actions">
+          <button class="btn btn-ghost btn-small" type="button" data-move-up>Выше</button>
+          <button class="btn btn-ghost btn-small" type="button" data-move-down>Ниже</button>
+          <button class="btn btn-outline btn-small" type="button" data-delete-hall>Удалить</button>
+        </div>
+      </div>
+      <div class="admin-hall-grid">
+        <div class="field">
+          <label>Короткая метка</label>
+          <input data-field="tagline" type="text" placeholder="до 120 гостей">
+        </div>
+        <div class="field">
+          <label>ID</label>
+          <input data-field="id" type="text" placeholder="main-hall">
+        </div>
+        <div class="field is-full">
+          <label>Описание</label>
+          <textarea data-field="description" required></textarea>
+        </div>
+      </div>
+      <div class="admin-photos" data-photos></div>
+      <div class="admin-photo-actions">
+        <label class="btn btn-outline btn-small">
+          Загрузить фото
+          <input data-upload-photo type="file" accept="image/*" hidden>
+        </label>
+        <button class="btn btn-ghost btn-small" type="button" data-add-photo-url>Добавить URL</button>
+      </div>
+    </article>
+  </template>
+
+  <script src="assets/admin.js?v=20260722"></script>
+</body>
+</html>

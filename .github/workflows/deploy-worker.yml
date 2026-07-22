@@ -1,0 +1,48 @@
+name: Deploy Cloudflare Worker
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - worker/**
+      - wrangler.toml
+      - package.json
+      - package-lock.json
+      - .github/workflows/deploy-worker.yml
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Upload Worker secrets
+        shell: bash
+        run: |
+          echo "$WORKER_GITHUB_TOKEN" | npx wrangler secret put GITHUB_TOKEN
+          if [ -n "$ADMIN_USERNAME" ]; then echo "$ADMIN_USERNAME" | npx wrangler secret put ADMIN_USERNAME; fi
+          if [ -n "$ADMIN_PASSWORD" ]; then echo "$ADMIN_PASSWORD" | npx wrangler secret put ADMIN_PASSWORD; fi
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WORKER_GITHUB_TOKEN: ${{ secrets.WORKER_GITHUB_TOKEN }}
+          ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+
+      - name: Deploy Worker
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
