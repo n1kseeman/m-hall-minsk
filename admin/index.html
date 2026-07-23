@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Админка — M HALL Minsk</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#f5f7f3">
+  <link rel="icon" href="../assets/m-hall-logo.png?v=20260723" type="image/png">
+  <link rel="stylesheet" href="admin.css?v=20260723">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="../" aria-label="M HALL управление залами">
+      <img src="../assets/m-hall-logo.png?v=20260723" alt="M HALL Минск">
+      <span>управление залами</span>
+    </a>
+    <a class="site-link" href="../">Открыть сайт</a>
+  </header>
+
+  <main class="shell">
+    <section class="login-panel" data-login-view>
+      <p class="eyebrow">Закрытый раздел</p>
+      <h1>Вход в админку</h1>
+      <p class="intro">Введите логин и пароль администратора.</p>
+      <form class="login-form" data-login-form>
+        <label>
+          <span>Логин</span>
+          <input name="username" type="text" value="admin" autocomplete="username" required>
+        </label>
+        <label>
+          <span>Пароль</span>
+          <input name="password" type="password" autocomplete="current-password" placeholder="Mhall-7429" required>
+        </label>
+        <button class="button button-primary" type="submit" data-login-button>Войти</button>
+        <p class="status" data-login-status role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section class="editor" data-editor-view hidden>
+      <div class="editor-heading">
+        <div>
+          <p class="eyebrow">Залы M HALL</p>
+          <h1>Редактирование</h1>
+          <p class="intro">Изменения появятся на сайте после публикации GitHub Pages.</p>
+        </div>
+        <div class="heading-actions">
+          <button class="button button-secondary" type="button" data-add-hall>+ Добавить зал</button>
+          <button class="text-button" type="button" data-logout>Выйти</button>
+        </div>
+      </div>
+      <div class="halls-list" data-halls-list></div>
+    </section>
+  </main>
+
+  <footer class="publish-bar" data-editor-view hidden>
+    <p class="status" data-editor-status role="status" aria-live="polite"></p>
+    <button class="button button-primary" type="button" data-save>Сохранить и опубликовать</button>
+  </footer>
+
+  <script src="config.js?v=20260723"></script>
+  <script src="admin.js?v=20260723"></script>
+</body>
+</html>
