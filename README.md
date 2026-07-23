@@ -61,6 +61,14 @@ npm run worker:deploy
 3. Добавьте секреты/переменные Worker для публикации в GitHub:
 
 ```bash
+Админ-панель доступна на странице `admin.html`. Она позволяет менять порядок залов, редактировать названия, описания и метки, добавлять/удалять залы и управлять порядком фотографий.
+
+Панель работает через тот же Cloudflare Worker, но по маршрутам `/admin/login` и `/admin/halls`, поэтому существующая форма бронирования продолжает отправлять заявки обычным `POST` на корневой endpoint.
+
+Дополнительные секреты/переменные Worker для публикации в GitHub:
+
+```bash
+wrangler secret put ADMIN_PASSWORD
 wrangler secret put GITHUB_TOKEN
 wrangler secret put GITHUB_OWNER # опционально, по умолчанию n1kseeman
 wrangler secret put GITHUB_REPO  # опционально, по умолчанию m-hall-minsk
@@ -92,3 +100,6 @@ wrangler secret put SESSION_SECRET # опционально, секрет под
    - `SESSION_SECRET` — опционально, секрет подписи сессии.
 4. Только после добавления трёх обязательных secrets вручную запустите `Actions` → `Deploy Cloudflare Worker` → `Run workflow`. Workflow не запускается автоматически на каждый push, чтобы не падать до настройки secrets.
 5. После успешного workflow откройте `https://mhall.by/admin/`, введите логин `admin` и пароль `Mhall-7429`.
+```
+
+`GITHUB_TOKEN` должен иметь право обновлять содержимое репозитория. Загрузка новых фотографий сохраняет файлы в `assets/photos/`, а изменения залов — в `content/halls.json`.
