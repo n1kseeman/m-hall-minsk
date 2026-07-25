@@ -4,13 +4,16 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "worker:login": "wrangler login",
+    "worker:dev": "wrangler dev",
     "worker:deploy": "wrangler deploy",
     "worker:secret:token": "wrangler secret put TELEGRAM_BOT_TOKEN",
     "worker:secret:chat": "wrangler secret put TELEGRAM_CHAT_ID",
     "test:security": "node worker/test-security.mjs",
     "worker:secret:github": "wrangler secret put GITHUB_TOKEN",
     "worker:secret:password-hash": "wrangler secret put ADMIN_PASSWORD_HASH",
-    "worker:secret:session": "wrangler secret put SESSION_SECRET"
+    "worker:secret:session": "wrangler secret put SESSION_SECRET",
+    "worker:password:generate": "node worker/scripts/generate-admin-password.mjs"
   },
   "devDependencies": {
     "wrangler": "^4.24.3"
