@@ -28,7 +28,7 @@ npm run worker:secret:chat
 npm run worker:deploy
 ```
 
-После деплоя Worker нужно вставить его URL в `data-form-endpoint`.
+После деплоя Worker нужно вставить его URL с маршрутом `/api/booking` в `data-form-endpoint`.
 
 ## Структура
 
@@ -50,18 +50,17 @@ npm run worker:deploy
 
 ## Административная панель
 
-Админ-панель доступна на странице `admin.html`. Она позволяет менять порядок залов, редактировать названия, описания и метки, добавлять/удалять залы и управлять порядком фотографий.
+Админ-панель доступна на странице `/admin/`. Старый адрес `admin.html` перенаправляет туда же. Панель позволяет менять порядок залов, редактировать названия, описания и метки, добавлять/удалять залы и управлять порядком фотографий.
 
-Панель работает через тот же Cloudflare Worker, но по маршрутам `/admin/login` и `/admin/halls`, поэтому существующая форма бронирования продолжает отправлять заявки обычным `POST` на корневой endpoint.
+Панель работает через тот же Cloudflare Worker, но по маршрутам `/api/login`, `/api/session` и `/api/publish`. Форма бронирования отправляет заявки на `/api/booking`; корневой `POST` Worker оставлен как совместимость со старой настройкой.
 
 Дополнительные секреты/переменные Worker для публикации в GitHub:
 
 ```bash
-wrangler secret put ADMIN_PASSWORD
+node worker/scripts/generate-admin-password.mjs
+wrangler secret put ADMIN_PASSWORD_HASH
+wrangler secret put SESSION_SECRET
 wrangler secret put GITHUB_TOKEN
-wrangler secret put GITHUB_OWNER # опционально, по умолчанию n1kseeman
-wrangler secret put GITHUB_REPO  # опционально, по умолчанию m-hall-minsk
-wrangler secret put GITHUB_BRANCH # опционально, по умолчанию main
 ```
 
-`GITHUB_TOKEN` должен иметь право обновлять содержимое репозитория. Загрузка новых фотографий сохраняет файлы в `assets/photos/`, а изменения залов — в `content/halls.json`.
+`GITHUB_OWNER`, `GITHUB_REPO`, `GITHUB_BRANCH`, `ADMIN_USERNAME` и `ALLOWED_ORIGINS` заданы в `wrangler.toml`. `GITHUB_TOKEN` должен иметь право обновлять содержимое репозитория. Загрузка новых фотографий сохраняет WebP-файлы в `assets/photos/`, а изменения залов — в `content/halls.json`.
