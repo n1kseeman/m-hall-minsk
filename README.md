@@ -63,4 +63,6 @@ wrangler secret put SESSION_SECRET
 wrangler secret put GITHUB_TOKEN
 ```
 
+Если в Cloudflare уже был старый секрет `ADMIN_PASSWORD`, логин продолжит работать без `ADMIN_PASSWORD_HASH`; хэшированный пароль лучше добавить при следующей ротации. Если `SESSION_SECRET` не задан, Worker подпишет сессии через уже существующий `GITHUB_TOKEN`.
+
 `GITHUB_OWNER`, `GITHUB_REPO`, `GITHUB_BRANCH`, `ADMIN_USERNAME` и `ALLOWED_ORIGINS` заданы в `wrangler.toml`. `GITHUB_TOKEN` должен иметь право обновлять содержимое репозитория. Загрузка новых фотографий сохраняет WebP-файлы в `assets/photos/`, а изменения залов — в `content/halls.json`.
