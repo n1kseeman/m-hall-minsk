@@ -1,6 +1,31 @@
 name = "m-hall-booking"
 main = "worker/telegram-booking-worker.js"
 compatibility_date = "2026-07-13"
+workers_dev = true
+preview_urls = false
 
 [observability]
 enabled = true
+
+[[ratelimits]]
+name = "LOGIN_RATE_LIMITER"
+namespace_id = "2026072501"
+
+  [ratelimits.simple]
+  limit = 5
+  period = 60
+
+[[ratelimits]]
+name = "BOOKING_RATE_LIMITER"
+namespace_id = "2026072502"
+
+  [ratelimits.simple]
+  limit = 5
+  period = 60
+
+[vars]
+ADMIN_USERNAME = "admin"
+GITHUB_OWNER = "n1kseeman"
+GITHUB_REPO = "m-hall-minsk"
+GITHUB_BRANCH = "main"
+ALLOWED_ORIGINS = "https://n1kseeman.github.io,https://mhall.by,https://www.mhall.by,http://localhost:4173,http://127.0.0.1:4173"
