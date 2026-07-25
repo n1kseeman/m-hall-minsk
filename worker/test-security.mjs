@@ -74,6 +74,25 @@ const sessionResponse = await worker.fetch(new Request("https://worker.example/a
 }), env);
 assert.equal(sessionResponse.status, 200);
 
+const legacyEnv = {
+  ADMIN_USERNAME: "admin",
+  ADMIN_PASSWORD: password,
+  GITHUB_TOKEN: "legacy-session-signing-secret",
+  ALLOWED_ORIGINS: "https://admin.example",
+  LOGIN_RATE_LIMITER: { limit: async () => ({ success: true }) }
+};
+const legacyLoginResponse = await worker.fetch(new Request("https://worker.example/api/login", {
+  method: "POST",
+  headers: { "Content-Type": "application/json", Origin: "https://admin.example" },
+  body: JSON.stringify({ username: "admin", password })
+}), legacyEnv);
+assert.equal(legacyLoginResponse.status, 200);
+const { token: legacyToken } = await legacyLoginResponse.json();
+const legacySessionResponse = await worker.fetch(new Request("https://worker.example/api/session", {
+  headers: { Authorization: `Bearer ${legacyToken}`, Origin: "https://admin.example" }
+}), legacyEnv);
+assert.equal(legacySessionResponse.status, 200);
+
 const blockedLogin = await worker.fetch(new Request("https://worker.example/api/login", {
   method: "POST",
   headers: { "Content-Type": "application/json", Origin: "https://admin.example" },
