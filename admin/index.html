@@ -5,9 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Админка — M HALL Minsk</title>
   <meta name="robots" content="noindex, nofollow">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; connect-src https://m-hall-booking.n1kseeman-rh.workers.dev; form-action 'self';">
+  <meta name="referrer" content="no-referrer">
   <meta name="theme-color" content="#f5f7f3">
   <link rel="icon" href="../assets/m-hall-logo.png?v=20260723" type="image/png">
   <link rel="stylesheet" href="admin.css?v=20260723">
+  <script src="frame-guard.js?v=20260723"></script>
 </head>
 <body>
   <header class="topbar">
@@ -30,7 +33,7 @@
         </label>
         <label>
           <span>Пароль</span>
-          <input name="password" type="password" autocomplete="current-password" placeholder="Mhall-7429" required>
+          <input name="password" type="password" autocomplete="current-password" required>
         </label>
         <button class="button button-primary" type="submit" data-login-button>Войти</button>
         <p class="status" data-login-status role="status" aria-live="polite"></p>
