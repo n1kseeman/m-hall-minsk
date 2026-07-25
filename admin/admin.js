@@ -3,7 +3,6 @@
   const apiUrl = String(config.apiUrl || "").replace(/\/+$/, "");
   const siteRoot = new URL("../", window.location.href);
   const contentUrl = new URL("content/halls.json", siteRoot);
-  const placeholderImage = "assets/photos/mhall-01.webp";
   const sessionKey = "mhall-admin-session";
   const maxImagesPerHall = 10;
 
@@ -57,7 +56,7 @@
   function normalizeImages(hall) {
     const candidate = Array.isArray(hall.images) ? hall.images : [hall.image];
     return candidate
-      .filter((image) => typeof image === "string" && image.trim() && image !== placeholderImage)
+      .filter((image) => typeof image === "string" && image.trim())
       .map((image) => makePhoto(image));
   }
 
