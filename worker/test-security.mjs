@@ -107,4 +107,100 @@ const blockedBooking = await worker.fetch(new Request("https://worker.example/ap
 }), env);
 assert.equal(blockedBooking.status, 403);
 
-console.log("Security validation tests passed.");
+assert.equal(
+  __test__.htmlToPlainText("<b>Имя:</b> Иван &lt;VIP&gt; &amp; Анна"),
+  "Имя: Иван <VIP> & Анна"
+);
+assert.equal(
+  __test__.isTelegramParseError(400, "Bad Request: can't parse entities"),
+  true
+);
+assert.equal(__test__.isRetryableTelegramError(429, 429), true);
+assert.equal(__test__.isRetryableTelegramError(400, 400), false);
+
+const telegramEnv = {
+  ...env,
+  TELEGRAM_BOT_TOKEN: "test-token",
+  TELEGRAM_CHAT_ID: "-1001234567890"
+};
+const bookingRequest = () => new Request("https://worker.example/api/booking", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Origin: "https://admin.example"
+  },
+  body: JSON.stringify({
+    name: "Иван <VIP>",
+    phone: "+375291234567",
+    eventType: "Свадьба",
+    guests: "12",
+    date: "2030-01-01",
+    comment: "Тест доставки",
+    venue: "M HALL Минск",
+    website: ""
+  })
+});
+const originalFetch = globalThis.fetch;
+
+try {
+  const sentBodies = [];
+  globalThis.fetch = async (_url, options) => {
+    sentBodies.push(JSON.parse(options.body));
+    if (sentBodies.length === 1) {
+      return Response.json({
+        ok: false,
+        error_code: 400,
+        description: "Bad Request: can't parse entities"
+      }, { status: 400 });
+    }
+    return Response.json({ ok: true, result: { message_id: 1 } });
+  };
+
+  const fallbackResponse = await worker.fetch(bookingRequest(), telegramEnv);
+  assert.equal(fallbackResponse.status, 200);
+  assert.equal(sentBodies.length, 2);
+  assert.equal(sentBodies[0].parse_mode, "HTML");
+  assert.equal("parse_mode" in sentBodies[1], false);
+  assert.match(sentBodies[1].text, /Иван <VIP>/);
+
+  let retryCalls = 0;
+  globalThis.fetch = async () => {
+    retryCalls += 1;
+    if (retryCalls === 1) {
+      return Response.json({
+        ok: false,
+        error_code: 429,
+        description: "Too Many Requests",
+        parameters: { retry_after: 0 }
+      }, { status: 429 });
+    }
+    return Response.json({ ok: true, result: { message_id: 2 } });
+  };
+
+  const retryResponse = await worker.fetch(bookingRequest(), telegramEnv);
+  assert.equal(retryResponse.status, 200);
+  assert.equal(retryCalls, 2);
+
+  const migratedBodies = [];
+  globalThis.fetch = async (_url, options) => {
+    migratedBodies.push(JSON.parse(options.body));
+    if (migratedBodies.length === 1) {
+      return Response.json({
+        ok: false,
+        error_code: 400,
+        description: "Bad Request: group chat was upgraded",
+        parameters: { migrate_to_chat_id: -1009876543210 }
+      }, { status: 400 });
+    }
+    return Response.json({ ok: true, result: { message_id: 3 } });
+  };
+
+  const migratedResponse = await worker.fetch(bookingRequest(), telegramEnv);
+  assert.equal(migratedResponse.status, 200);
+  assert.equal(migratedBodies.length, 2);
+  assert.equal(migratedBodies[1].chat_id, "-1009876543210");
+} finally {
+  globalThis.fetch = originalFetch;
+}
+
+console.log("Worker security and Telegram delivery tests passed.");
