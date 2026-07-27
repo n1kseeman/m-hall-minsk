@@ -7,6 +7,8 @@ const ADMIN_SESSION_SUBJECT = "m-hall-admin";
 const DEFAULT_GITHUB_OWNER = "n1kseeman";
 const DEFAULT_GITHUB_REPO = "m-hall-minsk";
 const DEFAULT_GITHUB_BRANCH = "main";
+const TELEGRAM_MAX_ATTEMPTS = 5;
+const TELEGRAM_MAX_RETRY_DELAY_MS = 10_000;
 const DEFAULT_ALLOWED_ORIGINS = [
   "https://n1kseeman.github.io",
   "https://mhall.by",
@@ -288,37 +290,151 @@ function formatBookingMessage(booking, request) {
 
 async function sendBookingToTelegram(env, text) {
   const token = String(env.TELEGRAM_BOT_TOKEN || "").trim();
-  const chatId = String(env.TELEGRAM_CHAT_ID || "").trim();
+  let chatId = String(env.TELEGRAM_CHAT_ID || "").trim();
 
   if (!token || !chatId) {
     throw new HttpError(503, "Приём заявок не настроен.");
   }
 
-  const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: chatId,
-      text,
-      parse_mode: "HTML",
-      disable_web_page_preview: true
-    })
-  });
+  let messageText = text;
+  let parseMode = "HTML";
+  let lastFailure = null;
 
-  if (!response.ok) {
-    console.error("Telegram API error", response.status);
-    throw new HttpError(502, "Не удалось отправить заявку.");
+  for (let attempt = 1; attempt <= TELEGRAM_MAX_ATTEMPTS; attempt += 1) {
+    let response;
+
+    try {
+      const body = {
+        chat_id: chatId,
+        text: messageText,
+        disable_web_page_preview: true
+      };
+      if (parseMode) body.parse_mode = parseMode;
+
+      response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+    } catch (error) {
+      lastFailure = {
+        kind: "network",
+        description: cleanTelegramError(error?.message || "Telegram request failed"),
+        attempt
+      };
+      logTelegramFailure(lastFailure);
+
+      if (attempt < TELEGRAM_MAX_ATTEMPTS) {
+        await sleep(telegramRetryDelay(attempt));
+        continue;
+      }
+      break;
+    }
+
+    const result = await readTelegramResult(response);
+    if (response.ok && result.ok !== false) return;
+
+    const errorCode = Number(result.error_code || response.status || 0);
+    const description = cleanTelegramError(result.description || response.statusText || "Unknown Telegram error");
+    const migrateToChatId = result.parameters?.migrate_to_chat_id;
+    const retryAfter = Number(result.parameters?.retry_after);
+    lastFailure = {
+      kind: "api",
+      status: response.status,
+      errorCode,
+      description,
+      attempt,
+      retryAfter: Number.isFinite(retryAfter) ? retryAfter : undefined,
+      migrateToChatId: migrateToChatId ? String(migrateToChatId) : undefined
+    };
+    logTelegramFailure(lastFailure);
+
+    if (migrateToChatId && String(migrateToChatId) !== chatId) {
+      chatId = String(migrateToChatId);
+      continue;
+    }
+
+    if (parseMode && isTelegramParseError(errorCode, description)) {
+      parseMode = "";
+      messageText = htmlToPlainText(text);
+      continue;
+    }
+
+    if (isRetryableTelegramError(response.status, errorCode) && attempt < TELEGRAM_MAX_ATTEMPTS) {
+      const delay = Number.isFinite(retryAfter)
+        ? Math.min(Math.max(retryAfter, 0) * 1000, TELEGRAM_MAX_RETRY_DELAY_MS)
+        : telegramRetryDelay(attempt);
+      await sleep(delay);
+      continue;
+    }
+
+    break;
   }
+
+  console.error("Telegram delivery failed", JSON.stringify(lastFailure || { kind: "unknown" }));
+  throw new HttpError(502, "Не удалось отправить заявку. Пожалуйста, попробуйте ещё раз.");
+}
+
+async function readTelegramResult(response) {
+  try {
+    return await response.json();
+  } catch {
+    return {};
+  }
+}
+
+function cleanTelegramError(value) {
+  return String(value)
+    .replace(/bot\d+:[A-Za-z0-9_-]+/g, "bot[redacted]")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 500);
+}
+
+function logTelegramFailure(failure) {
+  console.error("Telegram API error", JSON.stringify(failure));
+}
+
+function isTelegramParseError(errorCode, description) {
+  const normalized = String(description).toLowerCase();
+  return (
+    errorCode === 400
+    && normalized.includes("parse")
+    && (normalized.includes("entit") || normalized.includes("tag"))
+  );
+}
+
+function isRetryableTelegramError(status, errorCode) {
+  return status === 429 || errorCode === 429 || status >= 500 || errorCode >= 500;
+}
+
+function telegramRetryDelay(attempt) {
+  return Math.min(250 * (2 ** Math.max(attempt - 1, 0)), TELEGRAM_MAX_RETRY_DELAY_MS);
+}
+
+function sleep(delayMs) {
+  if (!delayMs) return Promise.resolve();
+  return new Promise((resolve) => setTimeout(resolve, delayMs));
+}
+
+function htmlToPlainText(value) {
+  return String(value)
+    .replace(/<\/?b>/gi, "")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, "\"")
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, "&");
 }
 
 async function handleLogin(request, env) {
   assertAllowedOrigin(request, env);
   await enforceRateLimit(env.LOGIN_RATE_LIMITER, request, "login");
 
-  if (!env.ADMIN_PASSWORD_HASH) {
+  if (!hasAdminPassword(env)) {
     throw new HttpError(503, "Пароль администратора не настроен.");
   }
-  if (!env.SESSION_SECRET) {
+  if (!getSessionSecret(env)) {
     throw new HttpError(503, "Секрет сессии администратора не настроен.");
   }
 
@@ -326,10 +442,7 @@ async function handleLogin(request, env) {
   const username = String(body.username || DEFAULT_ADMIN_USERNAME);
   const password = String(body.password || "");
   const validUsername = timingSafeEqual(username, String(env.ADMIN_USERNAME || DEFAULT_ADMIN_USERNAME));
-  const validPassword = timingSafeEqual(
-    await sha256Hex(password),
-    String(env.ADMIN_PASSWORD_HASH).toLowerCase()
-  );
+  const validPassword = await verifyAdminPassword(password, env);
 
   if (!validUsername || !validPassword) {
     throw new HttpError(401, "Неверный логин или пароль.");
@@ -357,18 +470,19 @@ async function createSessionToken(env) {
     nonce: base64UrlEncode(crypto.getRandomValues(new Uint8Array(16)))
   };
   const encodedPayload = base64UrlEncode(encoder.encode(JSON.stringify(payload)));
-  const signature = await signValue(encodedPayload, env.SESSION_SECRET);
+  const signature = await signValue(encodedPayload, getSessionSecret(env));
   return `${encodedPayload}.${signature}`;
 }
 
 async function verifySessionToken(token, env) {
-  if (!env.SESSION_SECRET) return false;
+  const sessionSecret = getSessionSecret(env);
+  if (!sessionSecret) return false;
 
   const parts = token.split(".");
   if (parts.length !== 2) return false;
 
   const [encodedPayload, signature] = parts;
-  const expectedSignature = await signValue(encodedPayload, env.SESSION_SECRET);
+  const expectedSignature = await signValue(encodedPayload, sessionSecret);
   if (!timingSafeEqual(signature, expectedSignature)) return false;
 
   try {
@@ -387,6 +501,24 @@ async function verifySessionToken(token, env) {
   } catch {
     return false;
   }
+}
+
+function hasAdminPassword(env) {
+  return Boolean(String(env.ADMIN_PASSWORD_HASH || "") || String(env.ADMIN_PASSWORD || ""));
+}
+
+async function verifyAdminPassword(password, env) {
+  const passwordHash = String(env.ADMIN_PASSWORD_HASH || "").trim().toLowerCase();
+  if (passwordHash) {
+    return timingSafeEqual(await sha256Hex(password), passwordHash);
+  }
+
+  const legacyPassword = String(env.ADMIN_PASSWORD || "");
+  return Boolean(legacyPassword) && timingSafeEqual(password, legacyPassword);
+}
+
+function getSessionSecret(env) {
+  return String(env.SESSION_SECRET || env.GITHUB_TOKEN || "").trim();
 }
 
 async function signValue(value, secret) {
@@ -742,6 +874,9 @@ async function githubRequest(env, path, options = {}) {
 }
 
 export const __test__ = Object.freeze({
+  htmlToPlainText,
+  isTelegramParseError,
+  isRetryableTelegramError,
   isValidBookingDate,
   isWebpBase64,
   validateBookingPayload,
