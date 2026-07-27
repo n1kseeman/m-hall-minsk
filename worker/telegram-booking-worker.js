@@ -9,6 +9,7 @@ const DEFAULT_GITHUB_REPO = "m-hall-minsk";
 const DEFAULT_GITHUB_BRANCH = "main";
 const TELEGRAM_MAX_ATTEMPTS = 5;
 const TELEGRAM_MAX_RETRY_DELAY_MS = 10_000;
+let cachedTelegramChatId = "";
 const DEFAULT_ALLOWED_ORIGINS = [
   "https://n1kseeman.github.io",
   "https://mhall.by",
@@ -290,7 +291,8 @@ function formatBookingMessage(booking, request) {
 
 async function sendBookingToTelegram(env, text) {
   const token = String(env.TELEGRAM_BOT_TOKEN || "").trim();
-  let chatId = String(env.TELEGRAM_CHAT_ID || "").trim();
+  const configuredChatId = String(env.TELEGRAM_CHAT_ID || "").trim();
+  let chatId = cachedTelegramChatId || configuredChatId;
 
   if (!token || !chatId) {
     throw new HttpError(503, "Приём заявок не настроен.");
@@ -322,9 +324,9 @@ async function sendBookingToTelegram(env, text) {
         description: cleanTelegramError(error?.message || "Telegram request failed"),
         attempt
       };
-      logTelegramFailure(lastFailure);
 
       if (attempt < TELEGRAM_MAX_ATTEMPTS) {
+        logTelegramRecovery("network retry", lastFailure);
         await sleep(telegramRetryDelay(attempt));
         continue;
       }
@@ -347,20 +349,31 @@ async function sendBookingToTelegram(env, text) {
       retryAfter: Number.isFinite(retryAfter) ? retryAfter : undefined,
       migrateToChatId: migrateToChatId ? String(migrateToChatId) : undefined
     };
-    logTelegramFailure(lastFailure);
 
     if (migrateToChatId && String(migrateToChatId) !== chatId) {
       chatId = String(migrateToChatId);
+      cachedTelegramChatId = chatId;
+      logTelegramRecovery("chat migrated", {
+        status: response.status,
+        errorCode,
+        attempt
+      });
       continue;
     }
 
     if (parseMode && isTelegramParseError(errorCode, description)) {
       parseMode = "";
       messageText = htmlToPlainText(text);
+      logTelegramRecovery("plain text fallback", {
+        status: response.status,
+        errorCode,
+        attempt
+      });
       continue;
     }
 
     if (isRetryableTelegramError(response.status, errorCode) && attempt < TELEGRAM_MAX_ATTEMPTS) {
+      logTelegramRecovery("API retry", lastFailure);
       const delay = Number.isFinite(retryAfter)
         ? Math.min(Math.max(retryAfter, 0) * 1000, TELEGRAM_MAX_RETRY_DELAY_MS)
         : telegramRetryDelay(attempt);
@@ -371,7 +384,7 @@ async function sendBookingToTelegram(env, text) {
     break;
   }
 
-  console.error("Telegram delivery failed", JSON.stringify(lastFailure || { kind: "unknown" }));
+  logTelegramFailure(lastFailure || { kind: "unknown" });
   throw new HttpError(502, "Не удалось отправить заявку. Пожалуйста, попробуйте ещё раз.");
 }
 
@@ -392,7 +405,11 @@ function cleanTelegramError(value) {
 }
 
 function logTelegramFailure(failure) {
-  console.error("Telegram API error", JSON.stringify(failure));
+  console.error("Telegram delivery failed", JSON.stringify(failure));
+}
+
+function logTelegramRecovery(action, details) {
+  console.warn(`Telegram ${action}`, JSON.stringify(details));
 }
 
 function isTelegramParseError(errorCode, description) {
