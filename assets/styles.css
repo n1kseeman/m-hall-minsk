@@ -1887,3 +1887,35 @@ body.menu-open .icon-btn::after {
     height: 78px;
   }
 }
+
+/* Developer credit */
+.developer-credit {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+  color: var(--muted);
+  font-size: .75rem;
+}
+.developer-credit a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  opacity: .65;
+  transition: opacity .2s ease;
+}
+.developer-credit a:hover,
+.developer-credit a:focus-visible { opacity: 1; }
+.developer-credit a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+.developer-credit img {
+  display: block;
+  width: 152px;
+  height: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  .developer-credit a { transition: none; }
+}
